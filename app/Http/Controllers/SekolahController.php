@@ -16,7 +16,7 @@ class SekolahController extends Controller
                 });
             })
             ->orderBy('nama')
-            ->paginate(5)
+            ->paginate(15)
             ->withQueryString();
 
         return view('admin.sekolah.index', compact('sekolahs'));
