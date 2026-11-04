@@ -57,9 +57,16 @@ $cls = 'w-full border rounded px-3 py-2';
     </div>
 
     <div class="space-y-4">
-        <p class="font-medium">
-            Klik peta atau geser marker untuk menentukan lokasi sekolah
-        </p>
+        <div class="flex items-center justify-between gap-2">
+            <p class="font-medium">
+                Klik peta atau geser marker untuk menentukan lokasi sekolah
+            </p>
+            <!-- Latihan Mandiri 4: Tombol Gunakan lokasi saya -->
+            <button type="button" id="btn-lokasi" class="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 shrink-0">
+                Gunakan lokasi saya
+            </button>
+        </div>
+
         <div id="map-picker" class="h-80 rounded border"></div>
 
         <div class="grid grid-cols-2 gap-4">
@@ -136,6 +143,27 @@ marker.on('dragend', () => {
             map.setView([lat, lng], 16);
         }
     });
+});
+
+// Latihan Mandiri 4: Fungsi Geolocation pada tombol "Gunakan lokasi saya"
+document.getElementById('btn-lokasi').addEventListener('click', () => {
+    if (!navigator.geolocation) {
+        alert('Browser tidak mendukung fitur Geolocation.');
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            marker.setLatLng([lat, lng]);
+            map.setView([lat, lng], 16);
+            isiKoordinat(lat, lng);
+        },
+        (err) => {
+            alert('Gagal mengambil lokasi: ' + err.message);
+        }
+    );
 });
 </script>
 @endpush

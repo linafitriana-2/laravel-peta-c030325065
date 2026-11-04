@@ -56,6 +56,15 @@ class SekolahController extends Controller
             ->with('success', 'Data sekolah berhasil dihapus.');
     }
 
+    public function geojson(Request $request)
+    {
+        $query = Sekolah::query();
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        return response()->json($query->get());
+    }
+
     private function rules(?int $id = null): array
     {
         return [
