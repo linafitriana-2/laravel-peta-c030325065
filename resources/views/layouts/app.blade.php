@@ -10,10 +10,18 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
     <nav class="bg-blue-800 text-white">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex gap-6">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex gap-6 items-center">
             <span class="font-bold">SIG Sekolah</span>
             <a href="{{ url('/') }}">Peta Publik</a>
             <a href="{{ route('admin.sekolah.index') }}">Data Sekolah</a>
+
+            <!-- Tambahan untuk Praktikum 12: Tombol Keluar jika sudah login -->
+            @auth
+            <form method="POST" action="{{ route('logout') }}" class="ml-auto">
+                @csrf
+                <button class="underline">Keluar ({{ auth()->user()->name }})</button>
+            </form>
+            @endauth
         </div>
     </nav>
 

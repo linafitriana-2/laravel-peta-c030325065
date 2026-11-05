@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Peta Sekolah</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<!-- Plugin Leaflet.markercluster CSS -->
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <style>
@@ -25,7 +25,7 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
 <header>
     <h1>Peta Sekolah</h1>
     
-    <!-- Filter Jenjang (Bawaan Modul) -->
+ 
     <select id="filter-jenjang">
         <option value="">Semua jenjang</option>
         <option value="SD">SD</option>
@@ -34,14 +34,14 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
         <option value="SMK">SMK</option>
     </select>
 
-    <!-- Latihan Mandiri 2: Filter Status (Negeri / Swasta) -->
+
     <select id="filter-status">
         <option value="">Semua status</option>
         <option value="Negeri">Negeri</option>
         <option value="Swasta">Swasta</option>
     </select>
 
-    <!-- Latihan Mandiri 3: Kolom Pencarian Nama Sekolah -->
+
     <input type="text" id="cari-nama" placeholder="Cari nama sekolah...">
     <button type="button" id="btn-cari">Cari</button>
 
@@ -52,10 +52,10 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- Plugin Leaflet.markercluster JS -->
+
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
-// Latihan Mandiri 6: Kontrol Layer untuk berpindah antar peta dasar (Basemap)
+
 const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -83,26 +83,24 @@ const petaDasar = {
     'Esri Satelit': satelit
 };
 
-// Latihan Mandiri 5: Gunakan plugin Leaflet.markercluster
 const cluster = L.markerClusterGroup();
 map.addLayer(cluster);
 
 L.control.layers(petaDasar, { 'Lokasi Sekolah': cluster }).addTo(map);
 
-// Mencegah teks dari database dibaca sebagai HTML (XSS)
 function esc(teks) {
     const d = document.createElement('div');
     d.textContent = teks ?? '';
     return d.innerHTML;
 }
 
-// Latihan Mandiri 1: Ikon/warna marker berbeda untuk setiap jenjang (SD, SMP, SMA, SMK)
+
 function ikonJenjang(jenjang) {
     const warnaMap = {
-        'SD': 'red',      // Merah untuk SD
-        'SMP': 'blue',    // Biru untuk SMP
-        'SMA': 'green',   // Hijau untuk SMA
-        'SMK': 'orange'   // Oranye untuk SMK
+        'SD': 'red',      
+        'SMP': 'blue',   
+        'SMA': 'green',   
+        'SMK': 'orange'
     };
     const warna = warnaMap[jenjang] || 'violet';
 
@@ -161,11 +159,9 @@ async function muatData() {
     }
 }
 
-// Event Listener Filter Jenjang & Status
 document.getElementById('filter-jenjang').addEventListener('change', muatData);
 document.getElementById('filter-status').addEventListener('change', muatData);
 
-// Latihan Mandiri 3: Fungsi Pencarian Nama Sekolah & Pindahkan Peta
 function cariSekolah() {
     const kataKunci = document.getElementById('cari-nama').value.trim().toLowerCase();
     if (!kataKunci) return;

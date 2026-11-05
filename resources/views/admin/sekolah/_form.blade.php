@@ -61,7 +61,7 @@ $cls = 'w-full border rounded px-3 py-2';
             <p class="font-medium">
                 Klik peta atau geser marker untuk menentukan lokasi sekolah
             </p>
-            <!-- Latihan Mandiri 4: Tombol Gunakan lokasi saya -->
+            
             <button type="button" id="btn-lokasi" class="px-3 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 shrink-0">
                 Gunakan lokasi saya
             </button>
@@ -108,7 +108,7 @@ const lngInput = document.getElementById('longitude');
 const sudahAda = latInput.value !== '' && lngInput.value !== '';
 const pusat = sudahAda
     ? [parseFloat(latInput.value), parseFloat(lngInput.value)]
-    : [-3.3194, 114.5908]; // pusat Kota Banjarmasin
+    : [-3.3194, 114.5908]; 
 
 const map = L.map('map-picker').setView(pusat, sudahAda ? 16 : 13);
 
@@ -145,7 +145,7 @@ marker.on('dragend', () => {
     });
 });
 
-// Latihan Mandiri 4: Fungsi Geolocation pada tombol "Gunakan lokasi saya"
+
 document.getElementById('btn-lokasi').addEventListener('click', () => {
     if (!navigator.geolocation) {
         alert('Browser tidak mendukung fitur Geolocation.');
