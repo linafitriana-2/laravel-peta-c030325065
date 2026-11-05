@@ -14,10 +14,13 @@
             <a href="{{ url('/') }}">Peta Publik</a>
             
             @auth
+            
                 <a href="{{ route('dashboard') }}">Dashboard</a>
 
-                <a href="{{ route('dashboard') }}">Dashboard</a>
-
+                @if (auth()->user()->isAdmin())
+                    <a href="{{ route('admin.users.index') }}">Pengguna</a>
+                @endif
+                
                 @if (auth()->user()->isDinas())
                     <a href="{{ route('dinas.sekolah.index') }}">Data Sekolah</a>
                 @endif
