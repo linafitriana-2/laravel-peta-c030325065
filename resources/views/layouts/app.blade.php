@@ -16,13 +16,22 @@
             @auth
                 <a href="{{ route('dashboard') }}">Dashboard</a>
 
+                <a href="{{ route('dashboard') }}">Dashboard</a>
+
                 @if (auth()->user()->isDinas())
                     <a href="{{ route('dinas.sekolah.index') }}">Data Sekolah</a>
                 @endif
 
-                <form method="POST" action="{{ route('logout') }}" class="ml-auto">
+                @if (auth()->user()->isSekolah() && auth()->user()->sekolah_id)
+                    <a href="{{ route('sekolah.edit', auth()->user()->sekolah_id) }}">Sekolah Saya</a>
+                @endif
+
+                <form method="POST" action="{{ route('logout') }}" class="ml-auto flex items-center gap-3">
                     @csrf
-                    <button class="underline">Keluar ({{ auth()->user()->name }})</button>
+                    <span class="text-sm">
+                        {{ auth()->user()->name }} ({{ auth()->user()->roleLabel() }})
+                    </span>
+                    <button class="underline">Keluar</button>
                 </form>
             @else
                 <a href="{{ route('login') }}" class="ml-auto">Masuk</a>

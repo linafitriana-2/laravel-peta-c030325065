@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetaController;
 use App\Http\Controllers\SekolahController;
+use App\Http\Controllers\ProfilSekolahController;
 use Illuminate\Support\Facades\Route;
 
 // Publik
@@ -39,5 +40,9 @@ Route::middleware('auth')->group(function () {
             ->name('sekolah.edit');
         Route::put('sekolah/{sekolah}', [SekolahController::class, 'update'])
             ->name('sekolah.update');
+        Route::get('sekolah/{sekolah}/profil', [ProfilSekolahController::class, 'edit'])
+            ->name('sekolah.profil.edit');
+        Route::put('sekolah/{sekolah}/profil', [ProfilSekolahController::class, 'update'])
+            ->name('sekolah.profil.update');
     });
 });

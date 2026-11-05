@@ -135,6 +135,9 @@ const lapisan = L.geoJSON(null, {
             ${esc(p.jenjang)} - ${esc(p.status)}<br>
             ${esc(p.alamat)}, ${esc(p.kecamatan)}<br>
             Telp: ${esc(p.telepon) || '-'}<br>
+            Kepala sekolah: ${esc(p.kepala_sekolah) || '-'}<br>
+            Akreditasi: ${esc(p.akreditasi) || '-'}<br>
+            Siswa: ${p.jumlah_siswa ?? '-'} | Guru: ${p.jumlah_guru ?? '-'}<br>
             <small>Koordinat: ${lat}, ${lng}</small>
         `);
         daftarMarker.push({ nama: (p.nama || '').toLowerCase(), layer: layer });
