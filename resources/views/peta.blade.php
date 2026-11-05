@@ -25,7 +25,6 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
 <header>
     <h1>Peta Sekolah</h1>
     
- 
     <select id="filter-jenjang">
         <option value="">Semua jenjang</option>
         <option value="SD">SD</option>
@@ -34,25 +33,31 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
         <option value="SMK">SMK</option>
     </select>
 
-
     <select id="filter-status">
         <option value="">Semua status</option>
         <option value="Negeri">Negeri</option>
         <option value="Swasta">Swasta</option>
     </select>
 
-
     <input type="text" id="cari-nama" placeholder="Cari nama sekolah...">
     <button type="button" id="btn-cari">Cari</button>
 
     <span id="jumlah"></span>
-    <a href="{{ route('admin.sekolah.index') }}">Kelola Data</a>
+
+    {{-- Perubahan untuk Praktikum 14 (Langkah 7): Menu navigasi dinamis sesuai auth & role --}}
+    @auth
+        <a href="{{ route('dashboard') }}">Dashboard</a>
+        @if (auth()->user()->isDinas())
+            <a href="{{ route('dinas.sekolah.index') }}" style="margin-left: 12px;">Kelola Data</a>
+        @endif
+    @else
+        <a href="{{ route('login') }}">Masuk</a>
+    @endauth
 </header>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
 
@@ -94,7 +99,6 @@ function esc(teks) {
     return d.innerHTML;
 }
 
-
 function ikonJenjang(jenjang) {
     const warnaMap = {
         'SD': 'red',      
@@ -125,7 +129,7 @@ const lapisan = L.geoJSON(null, {
     onEachFeature: (fitur, layer) => {
         const p = fitur.properties;
         const [lng, lat] = fitur.geometry.coordinates;
-       layer.bindPopup(`
+        layer.bindPopup(`
             <strong>${esc(p.nama)}</strong><br>
             NPSN: ${esc(p.npsn)}<br>
             ${esc(p.jenjang)} - ${esc(p.status)}<br>
