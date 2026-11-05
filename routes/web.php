@@ -25,3 +25,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)
         ->name('dashboard');
 });
+
+Route::middleware(['auth', 'role:dinas'])
+    ->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('sekolah', SekolahController::class)->except('show');
+    });
