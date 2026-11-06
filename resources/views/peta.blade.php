@@ -9,16 +9,16 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <style>
-html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
-header { height: 56px; box-sizing: border-box; padding: 0 16px;
-display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-background: #1e3a8a; color: #fff; }
-header h1 { font-size: 18px; margin: 0; }
-header select, header input, header button { padding: 4px 8px; border-radius: 4px; border: none; font-size: 14px; }
-header button { background: #3b82f6; color: #fff; cursor: pointer; }
-header button:hover { background: #2563eb; }
-header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
-#map { height: 90vh; width: 100%; }
+    html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
+    header { height: 56px; box-sizing: border-box; padding: 0 16px;
+        display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        background: #1e3a8a; color: #fff; }
+    header h1 { font-size: 18px; margin: 0; }
+    header select, header input, header button { padding: 4px 8px; border-radius: 4px; border: none; font-size: 14px; }
+    header button { background: #3b82f6; color: #fff; cursor: pointer; }
+    header button:hover { background: #2563eb; }
+    header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
+    #map { height: 90vh; width: 100%; }
 </style>
 </head>
 <body>
@@ -44,7 +44,6 @@ header a { color: #bfdbfe; margin-left: auto; text-decoration: none; }
 
     <span id="jumlah"></span>
 
-    {{-- Perubahan untuk Praktikum 14 (Langkah 7): Menu navigasi dinamis sesuai auth & role --}}
     @auth
         <a href="{{ route('dashboard') }}">Dashboard</a>
         @if (auth()->user()->isDinas())
