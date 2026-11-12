@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sekolah;
+use App\Support\Geometri;
 use Illuminate\Http\Request;
 
 class PetaController extends Controller
@@ -27,6 +28,22 @@ class PetaController extends Controller
         return view('peta.panas');
     }
 
+    public function wilayah()
+    {
+        return view('peta.wilayah');
+    }
+
+    public function rute()
+    {
+        return view('peta.rute');
+    }
+
+    public function alamat()
+    {
+        return view('peta.alamat');
+    }
+
+    // Endpoint GeoJSON untuk Titik Sekolah (Menu Peta Sekolah, Pencarian, Klaster, dll)
     public function geojson(Request $request)
     {
         $features = Sekolah::with('profil')
@@ -39,24 +56,69 @@ class PetaController extends Controller
                     'coordinates' => [$s->longitude, $s->latitude],
                 ],
                 'properties' => [
-                    'id' => $s->id,
-                    'npsn' => $s->npsn,
-                    'nama' => $s->nama,
-                    'jenjang' => $s->jenjang,
-                    'status' => $s->status,
-                    'alamat' => $s->alamat,
-                    'kecamatan' => $s->kecamatan,
-                    'telepon' => $s->telepon,
-                    'logo' => $s->logo, 
+                    'id'             => $s->id,
+                    'npsn'           => $s->npsn,
+                    'nama'           => $s->nama,
+                    'jenjang'        => $s->jenjang,
+                    'status'         => $s->status,
+                    'alamat'         => $s->alamat,
+                    'kecamatan'      => $s->kecamatan,
+                    'telepon'        => $s->telepon,
+                    'logo'           => $s->logo,
                     'kepala_sekolah' => $s->profil?->kepala_sekolah,
-                    'akreditasi' => $s->profil?->akreditasi,
-                    'jumlah_siswa' => $s->profil?->jumlah_siswa,
-                    'jumlah_guru' => $s->profil?->jumlah_guru,
+                    'akreditasi'     => $s->profil?->akreditasi,
+                    'jumlah_siswa'   => $s->profil?->jumlah_siswa,
+                    'jumlah_guru'    => $s->profil?->jumlah_guru,
                 ],
             ]);
 
         return response()->json([
-            'type' => 'FeatureCollection',
+            'type'     => 'FeatureCollection',
+            'features' => $features,
+        ]);
+    }
+
+    // Endpoint GeoJSON khusus untuk Poligon Wilayah Kecamatan (Menu Wilayah)[cite: 8]
+    public function geojsonWilayah(Request $request)
+    {
+        $features = Sekolah::with('profil')
+            ->when($request->jenjang, fn ($q, $j) => $q->where('jenjang', $j))
+            ->get()
+            ->groupBy('kecamatan')
+            ->map(function ($kelompok, $kecamatan) {
+                $titik = $kelompok
+                    ->map(fn ($s) => [$s->longitude, $s->latitude])
+                    ->all();
+ 
+                $hull = Geometri::convexHull($titik);
+ 
+                // Poligon memerlukan minimal 3 titik yang tidak segaris[cite: 8]
+                if (count($hull) < 3) {
+                    return null;
+                }
+ 
+                $hull[] = $hull[0]; // GeoJSON: cincin poligon harus tertutup[cite: 8]
+ 
+                return [
+                    'type' => 'Feature',
+                    'geometry' => [
+                        'type' => 'Polygon',
+                        'coordinates' => [$hull],
+                    ],
+                    'properties' => [
+                        'kecamatan'      => $kecamatan,
+                        'jumlah_sekolah' => $kelompok->count(),
+                        'jumlah_siswa'   => (int) $kelompok->sum(
+                            fn ($s) => $s->profil?->jumlah_siswa ?? 0
+                        ),
+                    ],
+                ];
+            })
+            ->filter()
+            ->values();
+ 
+        return response()->json([
+            'type'     => 'FeatureCollection',
             'features' => $features,
         ]);
     }
