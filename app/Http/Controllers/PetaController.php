@@ -9,8 +9,9 @@ class PetaController extends Controller
 {
     public function index()
     {
-        return view('peta');
+        return view('peta.index');
     }
+
 
     public function geojson(Request $request)
     {

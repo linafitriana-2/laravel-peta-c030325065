@@ -11,9 +11,11 @@ use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
 // Publik
-Route::get('/', [PetaController::class, 'index'])->name('peta.index');
-Route::get('/data/sekolah', [PetaController::class, 'geojson'])
-    ->name('peta.data');
+Route::controller(PetaController::class)->group(function () {
+    Route::get('/', 'index')->name('peta.index');
+    Route::get('/data/sekolah', 'geojson')->name('peta.data');
+});
+
 
 // Tamu
 Route::middleware('guest')->group(function () {
