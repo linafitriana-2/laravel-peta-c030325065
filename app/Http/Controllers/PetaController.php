@@ -17,6 +17,12 @@ class PetaController extends Controller
         return view('peta.cari');
     }
 
+    public function klaster()
+    {
+        return view('peta.klaster');
+    }
+
+
     public function geojson(Request $request)
     {
         $features = Sekolah::with('profil')
