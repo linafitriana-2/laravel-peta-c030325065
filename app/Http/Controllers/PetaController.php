@@ -43,7 +43,7 @@ class PetaController extends Controller
         return view('peta.alamat');
     }
 
-    // Endpoint GeoJSON untuk Titik Sekolah (Menu Peta Sekolah, Pencarian, Klaster, dll)
+
     public function geojson(Request $request)
     {
         $features = Sekolah::with('profil')
@@ -92,12 +92,12 @@ class PetaController extends Controller
  
                 $hull = Geometri::convexHull($titik);
  
-                // Poligon memerlukan minimal 3 titik yang tidak segaris[cite: 8]
+
                 if (count($hull) < 3) {
                     return null;
                 }
  
-                $hull[] = $hull[0]; // GeoJSON: cincin poligon harus tertutup[cite: 8]
+                $hull[] = $hull[0]; 
  
                 return [
                     'type' => 'Feature',
