@@ -22,6 +22,10 @@ class PetaController extends Controller
         return view('peta.klaster');
     }
 
+    public function panas()
+    {
+        return view('peta.panas');
+    }
 
     public function geojson(Request $request)
     {
