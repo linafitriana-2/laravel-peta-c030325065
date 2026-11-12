@@ -78,7 +78,7 @@ class PetaController extends Controller
         ]);
     }
 
-    // Endpoint GeoJSON khusus untuk Poligon Wilayah Kecamatan (Menu Wilayah)[cite: 8]
+    
     public function geojsonWilayah(Request $request)
     {
         $features = Sekolah::with('profil')
