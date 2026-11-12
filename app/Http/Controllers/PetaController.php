@@ -12,6 +12,10 @@ class PetaController extends Controller
         return view('peta.index');
     }
 
+    public function cari()
+    {
+        return view('peta.cari');
+    }
 
     public function geojson(Request $request)
     {

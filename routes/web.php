@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(PetaController::class)->group(function () {
     Route::get('/', 'index')->name('peta.index');
     Route::get('/data/sekolah', 'geojson')->name('peta.data');
+    Route::get('/pencarian', 'cari')->name('peta.cari');
 });
 
 
