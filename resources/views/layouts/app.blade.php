@@ -20,7 +20,7 @@
                 @if (auth()->user()->isAdmin())
                     <a href="{{ route('admin.users.index') }}">Pengguna</a>
                 @endif
-                
+
                 @if (auth()->user()->isDinas())
                     <a href="{{ route('dinas.sekolah.index') }}">Data Sekolah</a>
                 @endif
@@ -28,6 +28,8 @@
                 @if (auth()->user()->isSekolah() && auth()->user()->sekolah_id)
                     <a href="{{ route('sekolah.edit', auth()->user()->sekolah_id) }}">Sekolah Saya</a>
                 @endif
+
+                <a href="{{ route('password.edit') }}">Ubah Sandi</a>
 
                 <form method="POST" action="{{ route('logout') }}" class="ml-auto flex items-center gap-3">
                     @csrf

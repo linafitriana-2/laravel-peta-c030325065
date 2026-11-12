@@ -28,6 +28,7 @@
                 <th class="p-3">Email</th>
                 <th class="p-3">Role</th>
                 <th class="p-3">Sekolah</th>
+                <th class="p-3">Status</th> 
                 <th class="p-3">Aksi</th>
             </tr>
         </thead>
@@ -38,8 +39,31 @@
                 <td class="p-3">{{ $u->email }}</td>
                 <td class="p-3">{{ $u->roleLabel() }}</td>
                 <td class="p-3">{{ $u->sekolah?->nama ?? '-' }}</td>
-                <td class="p-3 flex gap-3">
+
+                <td class="p-3">
+                    @if ($u->is_active)
+                        <span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">Aktif</span>
+                    @else
+                        <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">Nonaktif</span>
+                    @endif
+                </td>
+
+                <td class="p-3 flex items-center gap-3">
                     <a href="{{ route('admin.users.edit', $u) }}" class="text-blue-700">Ubah</a>
+
+                    <!-- Tambahan Tombol Toggle Status Aktif/Nonaktif -->
+                    @if (!$u->is(auth()->user()))
+                    <form action="{{ route('admin.users.toggle-active', $u) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        @if ($u->is_active)
+                            <button type="submit" class="text-yellow-600 underline">Nonaktifkan</button>
+                        @else
+                            <button type="submit" class="text-green-600 underline">Aktifkan</button>
+                        @endif
+                    </form>
+                    @endif
+
                     @if (!$u->is(auth()->user()))
                     <form method="POST" action="{{ route('admin.users.destroy', $u) }}"
                           onsubmit="return confirm('Hapus pengguna ini?')">
@@ -51,7 +75,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="5" class="p-4 text-center">Belum ada pengguna.</td></tr>
+            <tr><td colspan="6" class="p-4 text-center">Belum ada pengguna.</td></tr>
             @endforelse
         </tbody>
     </table>

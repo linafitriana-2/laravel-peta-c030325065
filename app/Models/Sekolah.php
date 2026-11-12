@@ -6,8 +6,16 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Sekolah extends Model
 {
     protected $fillable = [
-        'npsn', 'nama', 'jenjang', 'status', 'alamat',
-        'kecamatan', 'telepon', 'latitude', 'longitude',
+        'npsn', 
+        'nama', 
+        'jenjang', 
+        'status', 
+        'alamat',
+        'kecamatan', 
+        'telepon', 
+        'logo',
+        'latitude', 
+        'longitude',
     ];
 
     protected function casts(): array

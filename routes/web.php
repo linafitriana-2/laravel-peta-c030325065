@@ -1,11 +1,13 @@
 <?php
 
+use App\Models\Sekolah;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PetaController;
 use App\Http\Controllers\SekolahController;
 use App\Http\Controllers\ProfilSekolahController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
 // Publik
@@ -27,6 +29,8 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
     Route::get('/dashboard', DashboardController::class)
         ->name('dashboard');
+    Route::get('/password', [PasswordController::class, 'edit'])->name('password.edit');
+    Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
 
     // Dinas: daftar, tambah, dan hapus sekolah
     Route::middleware('role:dinas')->prefix('dinas')->name('dinas.')
@@ -50,5 +54,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:admin')->prefix('admin')->name('admin.')
         ->group(function () {
             Route::resource('users', UserController::class)->except('show');
+            Route::patch('/users/{user}/toggle-active', [UserController::class, 'toggleActive'])
+                ->name('users.toggle-active');
         });
+
+    Route::get('/sekolah/{sekolah}', function (Sekolah $sekolah) {
+        $sekolah->load('profil'); 
+        return view('sekolah.show', compact('sekolah'));
+    })->name('sekolah.show');
 });

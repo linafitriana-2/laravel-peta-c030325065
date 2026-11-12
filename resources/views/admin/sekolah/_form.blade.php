@@ -55,6 +55,22 @@ $cls = 'w-full border rounded px-3 py-2';
             <p class="text-red-600 text-sm">{{ $message }}</p>
             @enderror
         </div>
+
+        <!-- Input Unggah Logo Sekolah -->
+        <div>
+            <label for="logo" class="block font-medium">Logo Sekolah (Opsional)</label>
+            <input type="file" id="logo" name="logo" class="{{ $cls }}">
+            @error('logo')
+            <p class="text-red-600 text-sm">{{ $message }}</p>
+            @enderror
+
+            @if(isset($sekolah->logo) && $sekolah->logo)
+                <div class="mt-2 flex items-center gap-3">
+                    <img src="{{ asset('storage/' . $sekolah->logo) }}" alt="Logo Sekolah" class="w-16 h-16 object-cover rounded border">
+                    <span class="text-xs text-gray-500">Logo saat ini</span>
+                </div>
+            @endif
+        </div>
     </div>
 
     <div class="space-y-4">

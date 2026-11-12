@@ -114,4 +114,21 @@ class UserController extends Controller
             ],
         ];
     }
+
+    public function toggleActive(User $user)
+    {
+        if ($user->is(request()->user())) {
+            return back()->with('error', 'Anda tidak dapat menonaktifkan akun sendiri.');
+        }
+
+        $newStatus = !$user->is_active;
+
+        $user->update([
+            'is_active' => $newStatus
+        ]);
+        $statusText = $newStatus ? 'diaktifkan' : 'dinonaktifkan';
+
+        return redirect()->route('admin.users.index')
+            ->with('success', "Akun pengguna berhasil {$statusText}.");
+    }
 }

@@ -24,6 +24,7 @@ class PetaController extends Controller
                     'coordinates' => [$s->longitude, $s->latitude],
                 ],
                 'properties' => [
+                    'id' => $s->id,
                     'npsn' => $s->npsn,
                     'nama' => $s->nama,
                     'jenjang' => $s->jenjang,
@@ -31,6 +32,7 @@ class PetaController extends Controller
                     'alamat' => $s->alamat,
                     'kecamatan' => $s->kecamatan,
                     'telepon' => $s->telepon,
+                    'logo' => $s->logo, 
                     'kepala_sekolah' => $s->profil?->kepala_sekolah,
                     'akreditasi' => $s->profil?->akreditasi,
                     'jumlah_siswa' => $s->profil?->jumlah_siswa,

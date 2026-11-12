@@ -128,16 +128,30 @@ const lapisan = L.geoJSON(null, {
     onEachFeature: (fitur, layer) => {
         const p = fitur.properties;
         const [lng, lat] = fitur.geometry.coordinates;
+
+        const logoHtml = p.logo 
+            ? `<img src="/storage/${esc(p.logo)}" alt="Logo" style="width: 50px; 
+            height: 50px; object-fit: cover; border-radius: 50%; margin-bottom: 6px; 
+            display: block; margin-left: auto; margin-right: auto;">` 
+            : '';
+
         layer.bindPopup(`
-            <strong>${esc(p.nama)}</strong><br>
-            NPSN: ${esc(p.npsn)}<br>
-            ${esc(p.jenjang)} - ${esc(p.status)}<br>
-            ${esc(p.alamat)}, ${esc(p.kecamatan)}<br>
-            Telp: ${esc(p.telepon) || '-'}<br>
-            Kepala sekolah: ${esc(p.kepala_sekolah) || '-'}<br>
-            Akreditasi: ${esc(p.akreditasi) || '-'}<br>
-            Siswa: ${p.jumlah_siswa ?? '-'} | Guru: ${p.jumlah_guru ?? '-'}<br>
-            <small>Koordinat: ${lat}, ${lng}</small>
+            <div style="text-align: center; min-width: 160px;">
+                ${logoHtml}
+                <strong>${esc(p.nama)}</strong><br>
+                NPSN: ${esc(p.npsn)}<br>
+                ${esc(p.jenjang)} ${esc(p.status)}<br>
+                ${esc(p.alamat)}, ${esc(p.kecamatan)}<br>
+                Telp: ${esc(p.telepon) || '-'}<br>
+                Kepala sekolah: ${esc(p.kepala_sekolah) || '-'}<br>
+                Akreditasi: ${esc(p.akreditasi) || '-'}<br>
+                Siswa: ${p.jumlah_siswa ?? '-'} | Guru: ${p.jumlah_guru ?? '-'}<br>
+                <small>Koordinat: ${lat}, ${lng}</small>
+                <hr style="margin: 8px 0; border: 0; border-top: 1px solid #cbd5e1;">
+                <a href="/sekolah/${p.id}" target="_blank" style="display: inline-block; background-color: #2563eb; color: white; padding: 4px 10px; border-radius: 4px; font-size: 12px; text-decoration: none; font-weight: 500;">
+                    Lihat Profil Lengkap &rarr;
+                </a>
+            </div>
         `);
         daftarMarker.push({ nama: (p.nama || '').toLowerCase(), layer: layer });
     }

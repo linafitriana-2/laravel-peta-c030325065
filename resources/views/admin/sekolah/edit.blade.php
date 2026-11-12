@@ -5,7 +5,7 @@
 <h1 class="text-2xl font-bold mb-4">Ubah Sekolah</h1>
 @include('sekolah._tab', ['sekolah' => $sekolah])
 
-<form method="POST" action="{{ route('sekolah.update', $sekolah) }}">
+<form method="POST" action="{{ route('sekolah.update', $sekolah) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     @include('admin.sekolah._form', ['sekolah' => $sekolah])
