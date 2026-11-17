@@ -43,8 +43,8 @@
     const MAKS = 10;
     const map = Peta.buat('peta');
     const lapisanRute = L.layerGroup().addTo(map);
-    const semua = new Map();   // npsn => fitur
-    let terpilih = [];         // urutan npsn yang dicentang
+    const semua = new Map();  
+    let terpilih = [];         
  
     function gambarDaftar() {
         const kata = document.getElementById('kata').value.trim().toLowerCase();
@@ -114,8 +114,7 @@
             };
         } catch (e) {
             console.error(e);
- 
-            // Cadangan: garis lurus dan jarak Haversine
+
             const legs = titik.slice(1).map((t, i) => ({
                 jarak: Peta.jarakKm(titik[i], t),
                 durasi: null,
@@ -210,8 +209,7 @@
     Peta.ambilSekolah().then((fitur) => {
         fitur.forEach((f) => {
             semua.set(f.properties.npsn, f);
- 
-            // Titik abu-abu sebagai konteks letak seluruh sekolah
+
             L.circleMarker(Peta.latlng(f), {
                 radius: 5, color: '#6b7280', fillOpacity: 0.6,
             }).bindTooltip(Peta.esc(f.properties.nama)).addTo(map);

@@ -1,9 +1,12 @@
 @extends('layouts.public')
-@section('title', 'Cek Lokasi')
+@section('title', 'Cek Lokasi & Analisis Jangkauan')
  
 @section('content')
-<div class="toolbar">
-    Klik di mana saja pada peta untuk melihat alamat dan sekolah terdekat.
+<div class="toolbar" style="display: flex; justify-content: space-between; align-items: center;">
+    <span>Klik di mana saja pada peta atau gunakan tombol GPS untuk mencari alamat, sekolah terdekat, dan radius 1 km.</span>
+    <button id="btn-lokasi" type="button" class="btn" style="background: #1e3a8a; color: #fff; padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer;">
+        📍 Lokasi Saya
+    </button>
 </div>
  
 <div id="peta" class="peta"></div>
@@ -20,10 +23,11 @@
     const panel = document.getElementById('hasil');
     let semua = [];
     let terakhir = 0;
+    let lingkaranJangkauan = null; 
  
     Peta.ambilSekolah().then((fitur) => { semua = fitur; });
  
-    // n sekolah terdekat dari sebuah titik [lat, lng]
+    
     function terdekat(titik, n = 3) {
         return semua
             .map((f) => ({ fitur: f, jarak: Peta.jarakKm(titik, Peta.latlng(f)) }))
@@ -41,21 +45,30 @@
  
         return respon.json();
     }
- 
-    map.on('click', async (e) => {
-        // Kebijakan Nominatim: maksimal 1 permintaan per detik
-        const sekarang = Date.now();
-        if (sekarang - terakhir < 1200) return;
-        terakhir = sekarang;
- 
-        const { lat, lng } = e.latlng;
+
+    async function prosesTitik(lat, lng) {
         const titik = [lat, lng];
  
         lapisan.clearLayers();
+
+        if (lingkaranJangkauan) {
+            map.removeLayer(lingkaranJangkauan);
+        }
+
+        lingkaranJangkauan = L.circle(titik, {
+            radius: 1000,          
+            color: '#2563eb',      
+            weight: 2,
+            fillColor: '#3b82f6',  
+            fillOpacity: 0.15      
+        }).addTo(lapisan);
+
         L.circleMarker(titik, {
-            radius: 9, color: '#fff', weight: 3,
+            radius: 7, color: '#fff', weight: 2,
             fillColor: '#ef4444', fillOpacity: 1,
         }).addTo(lapisan);
+
+        const sekolahDalamRadius = semua.filter(f => Peta.jarakKm(titik, Peta.latlng(f)) <= 1.0);
  
         const dekat = terdekat(titik);
         dekat.forEach((d) => {
@@ -101,13 +114,52 @@
         panel.innerHTML = `
             <strong>Koordinat</strong>
             <div style="font-family: monospace;">${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+            <strong style="display: block; margin-top: 8px;">Analisis Jangkauan</strong>
+            <div style="background: #eff6ff; padding: 6px 8px; border-radius: 4px; margin-top: 4px; color: #1e40af; font-weight: 500;">
+                🏫 Jumlah sekolah dalam radius 1 km: <strong>${sekolahDalamRadius.length} sekolah</strong>
+            </div>
             <strong style="display: block; margin-top: 8px;">Alamat</strong>
             ${bagianAlamat}
-            <strong style="display: block; margin-top: 8px;">Sekolah terdekat</strong>
+            <strong style="display: block; margin-top: 8px;">3 Sekolah terdekat</strong>
             <ul style="list-style: none; margin: 4px 0 0; padding: 0;">${daftar}</ul>`;
+    }
+
+    map.on('click', async (e) => {
+        const sekarang = Date.now();
+        if (sekarang - terakhir < 1200) return;
+        terakhir = sekarang;
+ 
+        const { lat, lng } = e.latlng;
+        await prosesTitik(lat, lng);
     });
  
-    // Klik pada daftar sekolah terdekat: terbang ke sekolah tersebut
+    document.getElementById('btn-lokasi').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation tidak didukung oleh browser Anda.');
+            return;
+        }
+ 
+        panel.style.display = 'block';
+        panel.textContent = 'Mendeteksi lokasi Anda...';
+ 
+        navigator.geolocation.getCurrentPosition(
+            async (posisi) => {
+                const lat = posisi.coords.latitude;
+                const lng = posisi.coords.longitude;
+
+                map.setView([lat, lng], 16);
+
+                await prosesTitik(lat, lng);
+            },
+            (error) => {
+                alert('Gagal mendeteksi posisi Anda. Pastikan izin akses lokasi (GPS) diaktifkan pada browser.');
+                panel.style.display = 'none';
+                console.error(error);
+            },
+            { enableHighAccuracy: true }
+        );
+    });
+
     panel.addEventListener('click', (e) => {
         const li = e.target.closest('[data-npsn]');
         if (!li) return;

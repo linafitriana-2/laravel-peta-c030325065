@@ -43,34 +43,61 @@ class PetaController extends Controller
         return view('peta.alamat');
     }
 
+    public function gabungan()
+    {
+        return view('peta.gabungan');
+    }
 
+    
     public function geojson(Request $request)
     {
-        $features = Sekolah::with('profil')
+        $request->validate([
+            'west'  => 'nullable|numeric',
+            'south' => 'nullable|numeric',
+            'east'  => 'nullable|numeric',
+            'north' => 'nullable|numeric',
+        ]);
+
+        $query = Sekolah::with('profil')
             ->when($request->jenjang, fn ($q, $j) => $q->where('jenjang', $j))
-            ->get()
-            ->map(fn ($s) => [
-                'type' => 'Feature',
-                'geometry' => [
-                    'type' => 'Point',
-                    'coordinates' => [$s->longitude, $s->latitude],
-                ],
-                'properties' => [
-                    'id'             => $s->id,
-                    'npsn'           => $s->npsn,
-                    'nama'           => $s->nama,
-                    'jenjang'        => $s->jenjang,
-                    'status'         => $s->status,
-                    'alamat'         => $s->alamat,
-                    'kecamatan'      => $s->kecamatan,
-                    'telepon'        => $s->telepon,
-                    'logo'           => $s->logo,
-                    'kepala_sekolah' => $s->profil?->kepala_sekolah,
-                    'akreditasi'     => $s->profil?->akreditasi,
-                    'jumlah_siswa'   => $s->profil?->jumlah_siswa,
-                    'jumlah_guru'    => $s->profil?->jumlah_guru,
-                ],
-            ]);
+            ->when($request->status, fn ($q, $s) => $q->where('status', $s));
+
+        if (
+            $request->has(['west', 'south', 'east', 'north'])
+        ) {
+            $query
+                ->whereBetween('longitude', [
+                    $request->west,
+                    $request->east,
+                ])
+                ->whereBetween('latitude', [
+                    $request->south,
+                    $request->north,
+                ]);
+        }
+
+        $features = $query->get()->map(fn ($s) => [
+            'type' => 'Feature',
+            'geometry' => [
+                'type' => 'Point',
+                'coordinates' => [$s->longitude, $s->latitude],
+            ],
+            'properties' => [
+                'id'             => $s->id,
+                'npsn'           => $s->npsn,
+                'nama'           => $s->nama,
+                'jenjang'        => $s->jenjang,
+                'status'         => $s->status,
+                'alamat'         => $s->alamat,
+                'kecamatan'      => $s->kecamatan,
+                'telepon'        => $s->telepon,
+                'logo'           => $s->logo,
+                'kepala_sekolah' => $s->profil?->kepala_sekolah,
+                'akreditasi'     => $s->profil?->akreditasi,
+                'jumlah_siswa'   => $s->profil?->jumlah_siswa,
+                'jumlah_guru'    => $s->profil?->jumlah_guru,
+            ],
+        ]);
 
         return response()->json([
             'type'     => 'FeatureCollection',
@@ -78,7 +105,8 @@ class PetaController extends Controller
         ]);
     }
 
-    
+
+
     public function geojsonWilayah(Request $request)
     {
         $features = Sekolah::with('profil')

@@ -49,14 +49,18 @@ $cls = 'w-full border rounded px-3 py-2';
         @endforeach
 
         <div>
-            <label for="alamat" class="block font-medium">Alamat</label>
+            <div class="flex items-center justify-between">
+                <label for="alamat" class="block font-medium">Alamat</label>
+                <button type="button" id="btn-geocoding" class="text-sm text-blue-700 hover:text-blue-900 font-medium flex items-center gap-1">
+                    📍 Isi alamat dari peta
+                </button>
+            </div>
             <textarea id="alamat" name="alamat" rows="3" class="{{ $cls }}">{{ old('alamat', $sekolah->alamat) }}</textarea>
             @error('alamat')
             <p class="text-red-600 text-sm">{{ $message }}</p>
             @enderror
         </div>
-
-        <!-- Input Unggah Logo Sekolah -->
+        
         <div>
             <label for="logo" class="block font-medium">Logo Sekolah (Opsional)</label>
             <input type="file" id="logo" name="logo" class="{{ $cls }}">
@@ -122,6 +126,9 @@ $cls = 'w-full border rounded px-3 py-2';
 <script>
 const latInput = document.getElementById('latitude');
 const lngInput = document.getElementById('longitude');
+const alamatInput = document.getElementById('alamat');
+const btnGeocoding = document.getElementById('btn-geocoding');
+
 const sudahAda = latInput.value !== '' && lngInput.value !== '';
 const pusat = sudahAda
     ? [parseFloat(latInput.value), parseFloat(lngInput.value)]
@@ -180,6 +187,37 @@ document.getElementById('btn-lokasi').addEventListener('click', () => {
             alert('Gagal mengambil lokasi: ' + err.message);
         }
     );
+});
+
+btnGeocoding.addEventListener('click', async () => {
+    const lat = latInput.value.trim();
+    const lng = lngInput.value.trim();
+
+    if (!lat || !lng) {
+        alert('Silakan tentukan titik lokasi pada peta atau isi Latitude & Longitude terlebih dahulu.');
+        return;
+    }
+
+    alamatInput.value = 'Sedang mendeteksi alamat dari koordinat...';
+
+    try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=id`;
+        const respon = await fetch(url);
+        if (!respon.ok) throw new Error('Gagal menghubungi layanan geocoding');
+
+        const data = await respon.json();
+
+        if (data && data.display_name) {
+            alamatInput.value = data.display_name;
+        } else {
+            alert('Alamat tidak ditemukan untuk koordinat tersebut.');
+            alamatInput.value = '';
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Terjadi kesalahan saat mengambil data alamat.');
+        alamatInput.value = '';
+    }
 });
 </script>
 @endpush

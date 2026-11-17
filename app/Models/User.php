@@ -6,7 +6,7 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- Tambahkan use ini di bagian atas
+use Illuminate\Database\Eloquent\Relations\BelongsTo; 
 
 class User extends Authenticatable
 {
@@ -71,25 +71,26 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_ADMIN;
+        return $this->role === UserRole::ADMIN;
     }
 
     public function isDinas(): bool
     {
-        return $this->role === self::ROLE_DINAS;
+        return $this->role === UserRole::DINAS;
     }
 
     public function isSekolah(): bool
     {
-        return $this->role === self::ROLE_SEKOLAH;
+        return $this->role === UserRole::SEKOLAH;
     }
 
+   
     public function roleLabel(): string
     {
         return match ($this->role) {
-            self::ROLE_ADMIN => 'Admin',
-            self::ROLE_DINAS => 'Dinas Pendidikan',
-            default => 'Sekolah',
+            UserRole::ADMIN => 'Admin',
+            UserRole::DINAS => 'Dinas Pendidikan',
+            UserRole::SEKOLAH => 'Sekolah',
         };
     }
 }

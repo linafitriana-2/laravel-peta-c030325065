@@ -50,6 +50,7 @@
                 'peta.wilayah' => 'Wilayah',
                 'peta.rute'    => 'Rute',
                 'peta.alamat'  => 'Cek Lokasi',
+                'peta.gabungan' => 'Gabungan',
             ];
         @endphp
         <nav class="menu">
