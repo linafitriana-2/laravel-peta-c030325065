@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfilSekolahController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\DB;
 
 
 // Publik
@@ -24,6 +25,22 @@ Route::controller(PetaController::class)->group(function () {
     Route::get('/rute', 'rute')->name('peta.rute');
     Route::get('/cek-alamat', 'alamat')->name('peta.alamat');
     Route::get('/gabungan', 'gabungan')->name('peta.gabungan');
+    Route::get('/health', function () {
+        try {
+            DB::select('SELECT 1');
+
+            return response()->json([
+                'status'    => 'ok',
+                'database'  => 'connected',
+                'timestamp' => now()->toIso8601String(),
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status'   => 'error',
+                'database' => 'disconnected',
+            ], 500);
+        }
+    })->name('health');
 });
 
 
