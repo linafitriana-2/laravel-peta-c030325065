@@ -13,6 +13,11 @@ class User extends Authenticatable
 
     use HasFactory, Notifiable;
 
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = strtolower(trim($value));
+    }
+
     
     public const ROLE_ADMIN = 'admin';
     public const ROLE_DINAS = 'dinas';

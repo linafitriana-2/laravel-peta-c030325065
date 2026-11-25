@@ -24,6 +24,10 @@
 
     <span id="jumlah"></span>
 
+    <button type="button" id="btn-radius">
+        Cari Sekolah Radius 1 KM
+    </button>
+
     <button type="button" id="btn-download-geojson">
         ⬇ Unduh GeoJSON
     </button>
@@ -37,6 +41,8 @@
     const map = Peta.buat('peta');
     const lapisan = L.layerGroup().addTo(map);
 
+    let lingkaranRadius = null;
+
     function urlDataSekolah(pakaiBatasPeta = false) {
         const jenjang = document.getElementById('filter-jenjang').value;
         const status = document.getElementById('filter-status').value;
@@ -45,6 +51,7 @@
 
         if (jenjang) params.append('jenjang', jenjang);
         if (status) params.append('status', status);
+
         if (pakaiBatasPeta) {
             const bounds = map.getBounds();
 
@@ -57,8 +64,17 @@
         return window.PETA_URL.data + '?' + params.toString();
     }
 
+    function hapusLingkaranRadius() {
+        if (lingkaranRadius) {
+            map.removeLayer(lingkaranRadius);
+            lingkaranRadius = null;
+        }
+    }
+
     async function muat() {
         try {
+            hapusLingkaranRadius();
+
             const respon = await fetch(urlDataSekolah(true));
 
             if (!respon.ok) {
@@ -79,11 +95,88 @@
             document.getElementById('jumlah').textContent =
                 fitur.length + ' sekolah ditemukan';
 
-        } catch (e) {
+        } catch (error) {
             document.getElementById('jumlah').textContent =
-                'Gagal memuat data';
+                'Gagal memuat data sekolah';
+
+            console.error(error);
         }
     }
+
+    // Pencarian sekolah dalam radius 1 kilometer menggunakan PostGIS
+    async function cariRadius() {
+        const tombol = document.getElementById('btn-radius');
+        const jumlah = document.getElementById('jumlah');
+
+        const pusat = map.getCenter();
+
+        const jenjang = document.getElementById('filter-jenjang').value;
+        const status = document.getElementById('filter-status').value;
+
+        const params = new URLSearchParams();
+
+        params.append('latitude', pusat.lat);
+        params.append('longitude', pusat.lng);
+
+        if (jenjang) params.append('jenjang', jenjang);
+        if (status) params.append('status', status);
+
+        tombol.disabled = true;
+        tombol.textContent = 'Mencari...';
+
+        try {
+            const respon = await fetch(
+                "{{ route('peta.radius') }}" + '?' + params.toString()
+            );
+
+            if (!respon.ok) {
+                throw new Error('Gagal melakukan pencarian radius');
+            }
+
+            const data = await respon.json();
+
+            lapisan.clearLayers();
+            hapusLingkaranRadius();
+
+            lingkaranRadius = L.circle(
+                [pusat.lat, pusat.lng],
+                {
+                    radius: 1000
+                }
+            ).addTo(map);
+
+            data.forEach((sekolah) => {
+                const latitude = Number(sekolah.latitude);
+                const longitude = Number(sekolah.longitude);
+
+                const marker = L.marker([latitude, longitude]);
+
+                const popup = `
+                    <strong>${sekolah.nama}</strong><br>
+                    Jenjang: ${sekolah.jenjang ?? '-'}<br>
+                    Status: ${sekolah.status ?? '-'}<br>
+                    Jarak: ${Number(sekolah.jarak_meter).toFixed(2)} meter
+                `;
+
+                marker.bindPopup(popup);
+                marker.addTo(lapisan);
+            });
+
+            jumlah.textContent =
+                data.length + ' sekolah ditemukan dalam radius 1 km';
+
+        } catch (error) {
+            jumlah.textContent = 'Gagal melakukan pencarian radius';
+
+            console.error(error);
+            alert('Pencarian radius gagal. Periksa route dan PetaController.');
+        } finally {
+            tombol.disabled = false;
+            tombol.textContent = 'Cari Sekolah Radius 1 KM';
+        }
+    }
+
+    // Unduh data GeoJSON
     document.getElementById('btn-download-geojson')
         .addEventListener('click', async function () {
 
@@ -123,17 +216,23 @@
             alert('Gagal mengunduh data GeoJSON.');
             tombol.textContent = '⬇ Unduh GeoJSON';
 
+            console.error(error);
         } finally {
             tombol.disabled = false;
         }
     });
+
+    document.getElementById('btn-radius')
+        .addEventListener('click', cariRadius);
 
     document.getElementById('filter-jenjang')
         .addEventListener('change', muat);
 
     document.getElementById('filter-status')
         .addEventListener('change', muat);
+
     map.on('moveend', muat);
+
     muat();
 </script>
 @endpush

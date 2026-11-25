@@ -4,7 +4,7 @@ node_modules
 vendor
 tests
 sig-sekolah
-. env
+.env
 .env.*
 !.env.example
 storage/framework/cache/*

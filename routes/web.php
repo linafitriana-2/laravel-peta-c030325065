@@ -10,10 +10,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PasswordController;
 use Illuminate\Support\Facades\Route;
 
+
 // Publik
 Route::controller(PetaController::class)->group(function () {
     Route::get('/', 'index')->name('peta.index');
     Route::get('/data/sekolah', 'geojson')->name('peta.data');
+    Route::get('/data/sekolah/radius', 'radius')->name('peta.radius');
     Route::get('/pencarian', 'cari')->name('peta.cari');
     Route::get('/klaster', 'klaster')->name('peta.klaster');
     Route::get('/peta-panas', 'panas')->name('peta.panas');
@@ -23,6 +25,7 @@ Route::controller(PetaController::class)->group(function () {
     Route::get('/cek-alamat', 'alamat')->name('peta.alamat');
     Route::get('/gabungan', 'gabungan')->name('peta.gabungan');
 });
+
 
 
 // Tamu
